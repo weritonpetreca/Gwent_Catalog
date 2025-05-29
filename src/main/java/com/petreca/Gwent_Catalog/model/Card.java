@@ -59,7 +59,8 @@ public class Card {
     @Column(name = "category")
     private List<String> categories;
 
-    private String imageURL;
+    @Column(length = 1000)
+    private String flavor;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

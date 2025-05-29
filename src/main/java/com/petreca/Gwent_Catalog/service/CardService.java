@@ -1,0 +1,138 @@
+package com.petreca.Gwent_Catalog.service;
+
+import com.petreca.Gwent_Catalog.dto.CardDTO;
+import com.petreca.Gwent_Catalog.dto.GwentApiResponse;
+import com.petreca.Gwent_Catalog.model.Card;
+import com.petreca.Gwent_Catalog.model.Faction;
+import com.petreca.Gwent_Catalog.model.Rarity;
+import com.petreca.Gwent_Catalog.repository.CardRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class CardService {
+
+    @Autowired
+    private final RestTemplate restTemplate;
+    private final CardRepository cardRepository;
+
+    private static final String GWENT_API_URL = "https://api.gwent.one/?key=data&response=json";
+
+    //Sincroniza as cartas da API com o banco local
+     public void syncCardsFromApi(){
+         log.info("Iniciando sincronização de cartas da API: {}",
+                 GWENT_API_URL);
+
+         try {
+             //Chama a API
+             ResponseEntity<GwentApiResponse> response = restTemplate.getForEntity(
+                     GWENT_API_URL,
+                     GwentApiResponse.class
+             );
+
+             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                 GwentApiResponse apiResponse = response.getBody();
+
+                 if (apiResponse.getRequest() != null) {
+                     log.info("API Response - Status: {}, Message: {}",
+                             apiResponse.getRequest().getStatus(),
+                             apiResponse.getRequest().getMessage());
+                 }
+
+                 //Converter o Map<String, CardDTO> para List<CardDTO>
+                 if (apiResponse.getResponse() != null) {
+                     List<CardDTO> cardsDTOs = new ArrayList<>(apiResponse.getResponse().values());
+
+                     if (cardsDTOs != null && !cardsDTOs.isEmpty()) {
+
+                         //Converte DTOs para entidades e salva
+                         List<Card> cards = cardsDTOs.stream()
+                                 .map(this::convertDtoToEntity)
+                                 .filter(card -> !cardRepository.findByName(card.getName()).isPresent())
+                                 .collect(Collectors.toList());
+
+                         cardRepository.saveAll(cards);
+                         log.info("Sincronização concluída. {} cartas adicionadas.", cards.size());
+                     }
+
+                 } else {
+                     log.warn("Resposta da API não contém cartas");
+                 }
+
+             } else {
+                 log.error("Erro na requisição à API. Status: {}",
+                         response.getStatusCode());
+             }
+
+         } catch (RestClientException e) {
+             log.error("Erro ao conectar com a API: {}",
+                     e.getMessage(), e);
+         } catch (Exception e) {
+             log.error("Erro inesperado ao sincronizar cartas: {}",
+                     e.getMessage(), e);
+         }
+     }
+
+     //Converte CardDTO para Card
+    private Card convertDtoToEntity(CardDTO dto) {
+         Card card = new Card();
+         card.setName(dto.getName());
+         card.setPower(dto.getAttributes().getPower());
+         card.setProvision(dto.getAttributes().getProvision());
+         card.setFaction(Faction.fromApiValue(dto.getAttributes().getFaction()));
+         card.setRarity(Rarity.fromApiValue(dto.getAttributes().getRarity()));
+         card.setType(dto.getAttributes().getType());
+         card.setAbility(dto.getAbility());
+         card.setCategories(Collections.singletonList(dto.getCategory()));
+         card.setFlavor(dto.getFlavor());
+         return card;
+    }
+
+    //CRUD Methods
+    public List<Card> findAllCards() {
+         return cardRepository.findAll();
+    }
+
+    public Optional<Card> findCardById(Long id) {
+         return cardRepository.findById(id);
+    }
+
+    public List<Card> searchCardsByName(String name) {
+         return cardRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public List<Card> findCardsByFaction(Faction faction) {
+         return cardRepository.findByFaction(faction);
+    }
+
+    public List<Card> findCardsByRarity(Rarity rarity) {
+         return cardRepository.findByRarity(rarity);
+    }
+
+    public Card saveCard(Card card) {
+         return cardRepository.save(card);
+    }
+
+    public void deleteCard(Long id) {
+         cardRepository.deleteById(id);
+    }
+
+    public long getTotalCards(){
+         return cardRepository.count();
+    }
+}
