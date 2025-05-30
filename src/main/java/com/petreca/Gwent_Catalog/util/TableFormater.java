@@ -90,7 +90,7 @@ public class TableFormater {
         return text.length() > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
     }
 
-    private static String getFactionColor(Faction faction) {
+    public static String getFactionColor(Faction faction) {
         return switch (faction) {
             case MONSTERS -> ConsoleColors.RED;
             case NILFGAARD -> ConsoleColors.BLACK;
@@ -102,7 +102,7 @@ public class TableFormater {
         };
     }
 
-    private static String getRarityColor(Rarity rarity) {
+    public static String getRarityColor(Rarity rarity) {
         return switch (rarity) {
             case COMMON -> ConsoleColors.WHITE;
             case RARE -> ConsoleColors.BLUE;

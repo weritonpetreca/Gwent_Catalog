@@ -4,13 +4,14 @@ import com.petreca.Gwent_Catalog.service.CardService;
 import com.petreca.Gwent_Catalog.service.FavoriteService;
 import com.petreca.Gwent_Catalog.util.ConsoleColors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 
 @Component
 @RequiredArgsConstructor
-public class ConsoleInterface {
+public class ConsoleInterface implements CommandLineRunner {
 
     private final CardService cardService;
     private final FavoriteService favoriteService;

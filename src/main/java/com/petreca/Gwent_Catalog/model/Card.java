@@ -46,7 +46,7 @@ public class Card {
     @Column(length = 1000) //Define que a coluna terá tamanho máximo de 1000 caracteres, garantindo que o banco aceite textos maiores do que o padrão (255).
     private String ability;
 
-    @ElementCollection //Indica que o campo é uma coleção de elementos simples (tipos primitivos ou Strings) ou de objetos Embeddable.
+    @ElementCollection(fetch = FetchType.EAGER) //Indica que o campo é uma coleção de elementos simples (tipos primitivos ou Strings) ou de objetos Embeddable.
     @CollectionTable(name = "card_categories",
             joinColumns = @JoinColumn(name = "card_id"))
     /*
