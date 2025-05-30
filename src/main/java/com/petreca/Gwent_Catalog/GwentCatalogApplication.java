@@ -1,6 +1,7 @@
 package com.petreca.Gwent_Catalog;
 
 import com.petreca.Gwent_Catalog.model.Faction;
+import com.petreca.Gwent_Catalog.model.Rarity;
 import com.petreca.Gwent_Catalog.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -29,6 +30,9 @@ public class GwentCatalogApplication implements CommandLineRunner {
 		System.out.println("\n=== TESTANDO BUSCAS ===");
 		cardService.findCardsByFaction(Faction.MONSTERS)
 				.forEach(card -> System.out.println("Monsters: " + card.getName()));
+
+		cardService.findCardsByRarity(Rarity.LEGENDARY)
+				.forEach(card -> System.out.println("Legendary: " + card.getName()));
 	}
 
 }

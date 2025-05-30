@@ -4,6 +4,7 @@ import com.petreca.Gwent_Catalog.model.Card;
 import com.petreca.Gwent_Catalog.model.Faction;
 import com.petreca.Gwent_Catalog.model.Rarity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,7 @@ import java.util.Optional;
 /*
 Permite que o Spring trate exceções específicas de persistência e faça a injeção automática desse componente onde necessário.
  */
-public interface CardRepository extends JpaRepository<Card, Long> {
+public interface CardRepository extends JpaRepository<Card, Long>, JpaSpecificationExecutor<Card>{
     /*
     JpaRepository<Card, Long> herda métodos prontos para operações CRUD (create, read, update, delete) sobre a entidade Card, com chave primária do tipo Long.
 

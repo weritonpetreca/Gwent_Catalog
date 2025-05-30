@@ -5,21 +5,18 @@ import com.petreca.Gwent_Catalog.dto.GwentApiResponse;
 import com.petreca.Gwent_Catalog.model.Card;
 import com.petreca.Gwent_Catalog.model.Faction;
 import com.petreca.Gwent_Catalog.model.Rarity;
+import com.petreca.Gwent_Catalog.model.SearchFilter;
 import com.petreca.Gwent_Catalog.repository.CardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import jakarta.persistence.criteria.Predicate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,6 +65,8 @@ public class CardService {
 
                          cardRepository.saveAll(cards);
                          log.info("Sincronização concluída. {} cartas adicionadas.", cards.size());
+                     } else {
+                         log.info("Cartas já sincronizadas.");
                      }
 
                  } else {
@@ -134,5 +133,55 @@ public class CardService {
 
     public long getTotalCards(){
          return cardRepository.count();
+    }
+
+    public List<Card> searchWithFilters(SearchFilter filter) {
+         if (filter.isEmpty()) {
+             return findAllCards();
+         }
+
+         //Usando Specification para busca dinâmica
+        return cardRepository.findAll((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (filter.getName() != null && !filter.getName().trim().isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("name")),
+                        "%" + filter.getName().toLowerCase() + "%"
+                ));
+            }
+
+            if (filter.getFaction() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("faction"),
+                        filter.getFaction()));
+            }
+
+            if (filter.getRarity() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("rarity"),
+                        filter.getRarity()));
+            }
+
+            if (filter.getMinPower() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("power"), filter.getMinPower()));
+            }
+
+            if (filter.getMaxPower() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("power"), filter.getMaxPower()));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        });
+    }
+
+    public List<Card> getRandomCards(int count) {
+         List<Card> allCards = findAllCards();
+         Collections.shuffle(allCards);
+         return allCards.stream().limit(count)
+                 .collect(Collectors.toList());
+    }
+
+    public Map<Faction, Long> getCardCountByFaction() {
+         return cardRepository.findAll().stream()
+                 .collect(Collectors.groupingBy(Card::getFaction, Collectors.counting()));
     }
 }

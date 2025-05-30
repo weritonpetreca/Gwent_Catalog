@@ -8,20 +8,18 @@ public enum Faction {
     /*
     Separar a representação interna (usada no código) da representação externa (usada na API e na interface do usuário)
      */
-    NEUTRAL("neutral", "Neutral"),
-    MONSTERS("monsters", "Monsters"),
-    NILFGAARD("nilfgaard", "Nilfgaard"),
-    NORTHERN_REALMS("norther_realms", "Norther_Realms"),
-    SCOIA_TAEL("scoia_tael", "Scoia_Tael"),
-    SKELLIGE("skellige", "Skellige"),
-    SYNDICATE("syndicate", "Syndicate");
+    NEUTRAL("Neutral"),
+    MONSTERS("Monster"),
+    NILFGAARD("Nilfgaard"),
+    NORTHERN_REALMS("Norther Realms"),
+    SCOIA_TAEL("Scoiatael"),
+    SKELLIGE("Skellige"),
+    SYNDICATE("Syndicate");
 
     private final String apiValue;
-    private final String displayName;
 
-    Faction(String apiValue, String displayName) {
+    Faction(String apiValue) {
         this.apiValue = apiValue;
-        this.displayName = displayName;
     }
 
     //Converter a string da API para enum.
