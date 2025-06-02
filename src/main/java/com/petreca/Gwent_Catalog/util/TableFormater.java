@@ -79,7 +79,7 @@ public class TableFormater {
             System.out.printf("%-3d | %s | %s%n",
                     i + 1,
                     card.getName(),
-                    fav.getNotes() != null ? fav.getNotes() + ")" : ""
+                    fav.getNotes() != null ? fav.getNotes() : ""
             );
         }
         System.out.println(HORIZONTAL_LINE);

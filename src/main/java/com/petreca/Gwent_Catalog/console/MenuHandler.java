@@ -84,6 +84,18 @@ public class MenuHandler {
 
         List<Card> randomCards = cardService.getRandomCards(count);
         TableFormater.printCardsTable(randomCards);
+
+        if (InputValidator.getYesNoConfirmation("Deseja ver os detalhes da(s) carta(s)?")) {
+            Card selectedCard;
+            if (randomCards.size() > 1) {
+                int choice = InputValidator.getValidInteger("Escolha uma carta (número): ", 1, randomCards.size());
+                selectedCard = randomCards.get(choice - 1);
+            } else {
+                selectedCard = randomCards.get(0);
+            }
+            TableFormater.printCardDetails(selectedCard);
+        }
+
     }
 
     public void manageFavorites() {
@@ -230,7 +242,7 @@ public class MenuHandler {
             if (InputValidator.getYesNoConfirmation("Deseja adicionar esta Carta aos favoritos?")) {
                 String notes = InputValidator.getValidString("Adicionar notas (opcional): ", true);
                 favoriteService.addToFavorites(selectedCard, notes);
-                System.out.println(ConsoleColors.success("Carta adicionada aos Favoritos!"));
+                System.out.println(ConsoleColors.success("Carta adicionada aos Favoritos! ⭐"));
             }
         }
     }
