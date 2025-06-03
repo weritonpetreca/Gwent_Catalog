@@ -1,4 +1,4 @@
-version: '28,8,1'
+version: '28.8.1'
 services:
   mysql:
     image: mysql:8.0.42
