@@ -85,7 +85,7 @@ This project was built to showcase my skills in Java and Spring Boot, focusing o
 ## 👨‍💻 Author
 
 ### Weriton L. Petreca:
-[LinkedIn](https://www.linkedin.com/in/weritonpetreca/)
+[LinkedIn](https://www.linkedin.com/in/weriton-petreca/)
 [GitHub](https://github.com/weritonpetreca)
 <hr></hr>
 ⭐ If you like this project, give it a star!
