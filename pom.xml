@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.petreca</groupId>
-	<artifactId>Gwent_Catalog</artifactId>
+	<artifactId>gwent-catalog</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Gwent_Catalog</name>
 	<description>Building a Gwent catalog</description>
